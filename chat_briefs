@@ -1,0 +1,89 @@
+June 6/ 1PM, 7:30PM// Revised original code, multi-user requirements.
+
+import os
+from langchain.prompts import PromptTemplate
+from langchain.llms import OpenAI
+
+# Set up the environment
+os.environ["OPENAI_API_KEY"] = "your_openai_api_key"
+model = OpenAI("gpt-4")
+
+# Define a prompt template
+prompt_template = PromptTemplate("Adjective: {adjective}\nContent: {content}\nCorpus Data: {data}")
+
+# Load the corpus data
+def retrieve_corpus_data(document_name):
+    # Implement your logic to retrieve the relevant data from your corpus
+    # Return the corpus data as a dictionary
+    return {
+        'adjective': 'funny',
+        'content': 'chickens',
+        'relevant_data': 'your_relevant_corpus_data',
+    }
+
+# Load the prompt using the prompt template and corpus data
+def load_prompt(document_name):
+    corpus_data = retrieve_corpus_data(document_name)
+    return prompt_template.render(corpus_data)
+
+# User query
+user_query = "what_is_it"
+
+# Generate response
+prompt = load_prompt("user-document")
+response = model.generate(prompt + user_query)
+
+# Process and display the response
+print(response.choices[0].text)
+
+#import huggingface model to review and create an embedding for our (db).
+
+!!!!Ending on the note of indexing document information. Nothing added for this, and still components need work in the block noted above.
+
+MULTI-USER APPLICATION SUPPORT
+1. Implement user authentication:
+
+- Choose a web framework (Flask, Django, FastAPI, etc.) to create an app with user authentication and sessions
+- Configure the framework to use a database to store user information and manage sessions
+
+2. Modify data structures for multi-user support:
+
+- Update the `process_documents` function to accept a `user_id` parameter.
+- Modify the folder structure/database schema to store documents, embeddings, and other user-specific data separately based on user IDs. For instance, you can prepend the `user_id` to the directory path where you save data or add the `user_id` as an additional column in the tables if using a database.
+- Update your loader functions and data processing logic to take into account the new folder structure/schema when loading, processing, and storing data.
+
+Example: Update the `process_documents` function to accept a `user_id` parameter.
+
+```python
+def process_documents(user_id: str, ignored_files: List[str] = []) -> List[Document]:
+    ...
+    user_source_directory = os.path.join(source_directory, user_id)
+    ...
+    documents = load_documents(user_source_directory, ignored_files)
+    ...
+```
+
+3. Update the code to handle user-specific data:
+
+- Update each function which deals with data storage, retrieval, and processing to include the `user_id` parameter for user-specific data access.
+- Update the main function or HTTP endpoints for your app to handle requests from multiple users by fetching session data and processing user-specific documents.
+
+Example: Update main function or HTTP endpoint.
+
+```python
+def main(user_id: str):
+    ...
+    if does_vectorstore_exist(persist_directory, user_id):
+        ...
+        collection = db.get(user_id)
+        texts = process_documents(user_id, [metadata['source'] for metadata in collection['metadatas']])
+        ...
+    else:
+        ...
+        texts = process_documents(user_id)
+        ...
+    db.persist(user_id)
+    ...
+```
+
+After implementing these changes, your application will support multiple users with separate data storage and processing. Ensure that your application has proper access control to prevent unauthorized access to other users' data.

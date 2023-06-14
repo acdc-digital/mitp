@@ -1,0 +1,33 @@
+As an AI language model, I am unable to create or modify files directly. However, I can provide you with the code that should be executed to create the `medex.db` file. You can run this code in the `database.py` file, which will create the `medex.db` file in the `Instance` folder.
+
+In the `database.py` file, add the following code:
+
+```python
+from flask_sqlalchemy import SQLAlchemy
+from create_app import create_app
+
+app = create_app()
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Instance/medex.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
+
+def init_db():
+    db.create_all()
+
+if __name__ == '__main__':
+    init_db()
+```
+
+To create the `medex.db` file, run the `database.py` file:
+
+```
+python database.py
+```
+
+This will create the `medex.db` file in the `Instance` folder with the appropriate schema.

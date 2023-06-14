@@ -46,5 +46,8 @@ def logout():
 def protected():
     return render_template('protected/protected.html')
 
+# Import routes after creating the app instance to avoid circular imports
+import upload_docs_routes
+
 if __name__ == '__main__':
     app.run(debug=True)

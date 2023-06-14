@@ -13,15 +13,19 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
+    privacy_data = db.Column(db.Text, nullable=True)  # Added a new column for privacy data
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
-
 
 def init_db():
     with app.app_context():
         db.create_all()
 
-
-if __name__ == "__main__":
-    init_db()
+def get_privacy_data_from_db(user_id):
+    with app.app_context():
+        user = User.query.get(user_id)
+        if user:
+            return user.privacy_data
+        else:
+            return None
